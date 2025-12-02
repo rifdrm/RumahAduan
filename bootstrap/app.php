@@ -14,8 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Tambahkan baris ini:
         $middleware->alias([
             'cek.aktif' => \App\Http\Middleware\EnsureAccountIsActive::class,
+            'role' => \App\Http\Middleware\CheckRole::class, // <-- Tambahkan ini
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+

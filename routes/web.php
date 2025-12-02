@@ -39,3 +39,25 @@ Route::middleware(['auth', 'cek.aktif'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware(['auth', 'cek.aktif'])->group(function () {
+    
+    // MODIFIKASI ROUTE DASHBOARD
+    // Jika Admin -> Ke Dashboard Admin
+    // Jika Warga -> Ke Dashboard Warga
+    Route::get('/dashboard', function () {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('dashboard');
+    })->name('dashboard');
+
+    // === GROUP KHUSUS ADMIN ===
+    Route::middleware('role:admin')->group(function () { // Kita butuh middleware role sebentar lagi
+        Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
+        Route::post('/admin/verifikasi/{id}', [App\Http\Controllers\AdminController::class, 'verifikasiWarga'])->name('admin.verifikasi');
+        Route::patch('/admin/laporan/{id}', [App\Http\Controllers\AdminController::class, 'updateStatusLaporan'])->name('admin.laporan.update');
+    });
+
+    // ... Route Pengaduan Warga (yang sudah dibuat sebelumnya) ...
+});
