@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Jejak Aduan - RumahAduan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport Mobile (Wajib) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    /* CSS TEMANMU (PERSIS) */
+    /* CSS TEMANMU (BASE) */
     :root {
       --purple: #6d28d9; --purple-soft: #a855f7; --purple-dark: #4c1d95;
       --bg-soft: #f5f3ff; --text-main: #111827; --text-muted: #6b7280;
@@ -62,8 +63,14 @@
     }
     .btn-pill-main:hover { background: linear-gradient(135deg, #4f46e5, #4338ca); color: #ffffff; }
 
-    .table-wrapper { margin-top: 4px; border-radius: 18px; overflow: hidden; border: 1px solid #e5e7eb; }
-    .table-jejak { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .table-wrapper { 
+        margin-top: 4px; border-radius: 18px; border: 1px solid #e5e7eb;
+        /* Updated: Agar bisa scroll horizontal di HP */
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+    }
+    
+    .table-jejak { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 600px; /* Min-width agar tabel tidak gepeng di HP */ }
     .table-jejak thead { background: #f9fafb; }
     .table-jejak th, .table-jejak td { padding: 10px 14px; text-align: left; }
     .table-jejak th { font-weight: 600; color: #4b5563; border-bottom: 1px solid #e5e7eb; }
@@ -74,11 +81,11 @@
     /* BADGE STATUS CUSTOM */
     .badge-kategori { font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; background: #e5e7eb; color: #374151; }
     
-    .badge-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
-    .status-terkirim { background: #dbeafe; color: #1e40af; } /* Biru */
-    .status-diproses { background: #fef3c7; color: #92400e; } /* Kuning */
-    .status-selesai { background: #dcfce7; color: #166534; }  /* Hijau */
-    .status-ditolak { background: #fee2e2; color: #991b1b; }  /* Merah */
+    .badge-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+    .status-terkirim { background: #dbeafe; color: #1e40af; } 
+    .status-diproses { background: #fef3c7; color: #92400e; } 
+    .status-selesai { background: #dcfce7; color: #166534; }  
+    .status-ditolak { background: #fee2e2; color: #991b1b; }  
 
     .foto-icon { height: 38px; width: 38px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
 
@@ -92,7 +99,34 @@
     footer { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; padding-top: 10px; border-top: 1px solid #e5e7eb; font-size: 0.8rem; color: var(--text-muted); }
     footer img { height: 24px; }
 
-    @media (max-width: 900px) { .app-shell { padding: 20px 16px 24px; } .table-jejak th, .table-jejak td { padding: 8px 10px; } }
+    /* ========================================= */
+    /* MODIFIKASI RESPONSIVE (LAYOUT MOBILE)     */
+    /* ========================================= */
+    @media (max-width: 576px) {
+      /* 1. Body & Shell */
+      body { padding: 15px 10px; }
+      .app-shell { padding: 20px 15px; border-radius: 20px; }
+
+      /* 2. Header Logo Pindah */
+      .top-bar { flex-direction: row; flex-wrap: wrap; }
+      .logo-top { height: 35px; margin-left: auto; } /* Logo geser ke kanan */
+      
+      /* 3. Tombol Buat Laporan Full Width */
+      .card-soft-header { flex-direction: column; align-items: stretch; gap: 15px; }
+      .btn-pill-main { 
+        justify-content: center; width: 100%; padding: 12px; font-size: 0.95rem; 
+      }
+
+      /* 4. Tabel Scrollable */
+      .table-jejak th, .table-jejak td { 
+        white-space: nowrap; /* Mencegah teks turun ke bawah yg bikin tabel aneh */
+        font-size: 0.75rem; 
+        padding: 8px 10px;
+      }
+
+      /* 5. Footer */
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
   </style>
 </head>
 <body>

@@ -11,9 +11,12 @@
     xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous"
   />
+  
+  <!-- Viewport untuk Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <style>
-    /* CSS DARI TEMANMU (PERSIS) */
+    /* CSS DARI TEMANMU (BASE) */
     :root {
       --purple: #6d28d9;
       --purple-soft: #a855f7;
@@ -167,9 +170,47 @@
     }
     footer img { height: 24px; }
 
-    @media (max-width: 640px) {
-      .app-shell { padding: 20px 16px 24px; }
-      .card-soft { padding: 18px 16px 16px; }
+    /* ========================================= */
+    /* MODIFIKASI RESPONSIVE (LAYOUT MOBILE)     */
+    /* ========================================= */
+    @media (max-width: 576px) {
+      /* Kurangi padding body agar layar tidak penuh sesak */
+      body {
+        padding: 15px 10px;
+      }
+
+      /* Card Utama (Shell) dibuat lebih lega untuk HP */
+      .app-shell {
+        padding: 20px 16px 24px;
+        border-radius: 20px;
+      }
+
+      /* Judul Header disesuaikan ukurannya */
+      .top-title {
+        font-size: 1.25rem;
+      }
+      .logo-top {
+        height: 35px;
+      }
+
+      /* Card Form dibuat paddingnya pas di jempol */
+      .card-soft {
+        padding: 18px 15px;
+        border-radius: 18px;
+      }
+
+      /* FIX PENTING: Input Font 16px Mencegah Auto-Zoom di iPhone/iOS */
+      .form-control, .form-select {
+        font-size: 16px !important;
+        padding: 10px 15px; /* Sedikit lebih besar untuk touch target */
+      }
+
+      /* Footer ditumpuk ke bawah (Stack) */
+      footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
     }
   </style>
 </head>

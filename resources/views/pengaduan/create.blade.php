@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Buat Aduan Baru - RumahAduan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport Mobile (Wajib) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    /* CSS DARI TEMANMU (PERSIS) */
+    /* CSS DARI TEMANMU (PERSIS - BASE) */
     :root {
       --purple: #6d28d9; --purple-soft: #a855f7; --purple-dark: #4c1d95;
       --bg-soft: #f5f3ff; --text-main: #111827; --text-muted: #6b7280;
@@ -94,7 +95,43 @@
     footer { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; padding-top: 10px; border-top: 1px solid #e5e7eb; font-size: 0.8rem; color: var(--text-muted); }
     footer img { height: 24px; }
 
-    @media (max-width: 900px) { .app-shell { padding: 20px 16px 24px; } .card-soft { padding: 18px 16px 16px; } }
+    /* ========================================= */
+    /* MODIFIKASI RESPONSIVE (LAYOUT MOBILE)     */
+    /* ========================================= */
+    @media (max-width: 576px) {
+      /* 1. Body & Shell */
+      body { padding: 15px 10px; }
+      .app-shell { padding: 20px 15px; border-radius: 20px; }
+
+      /* 2. Header */
+      .top-bar { flex-wrap: wrap; }
+      .logo-top { height: 35px; margin-left: auto; } /* Logo geser ke kanan */
+
+      /* 3. Form Card & Input */
+      .card-soft { padding: 20px 15px; border-radius: 18px; }
+      .card-soft-header { flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 18px; }
+      
+      .form-control, .form-select { 
+        font-size: 16px; /* Mencegah auto-zoom iOS */
+        padding: 10px 15px; 
+      }
+
+      /* 4. Tombol Aksi (Batal & Kirim) */
+      .btn-row { 
+        flex-direction: column-reverse; /* Tombol Kirim di ATAS Batal (UX Jempol) */
+        gap: 12px; 
+        margin-top: 25px;
+      }
+      .btn-primary-pill, .btn-secondary-pill {
+        width: 100%; /* Tombol lebar penuh */
+        justify-content: center;
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+
+      /* 5. Footer */
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
   </style>
 </head>
 <body>

@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Profil Keluarga RumahAduan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport Mobile (Wajib) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    /* CSS TEMANMU (SAMA PERSIS) */
+    /* CSS TEMANMU (PERSIS - BASE) */
     :root { --purple: #6d28d9; --purple-dark: #4c1d95; --bg-soft: #f5f3ff; --text-main: #111827; --text-muted: #6b7280; --radius-lg: 28px; }
     body { background: radial-gradient(circle at top left, #ede9fe 0, transparent 55%), #f9fafb; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; color: var(--text-main); }
     .app-shell { max-width: 1100px; margin: 0 auto; background: rgba(255,255,255,0.9); border-radius: var(--radius-lg); padding: 30px; box-shadow: 0 24px 60px rgba(15,23,42,0.12); backdrop-filter: blur(18px); }
@@ -22,7 +24,7 @@
     .card-soft { background: white; border-radius: 22px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 30px; }
     .card-soft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .card-soft-title { font-weight: 700; color: var(--purple-dark); }
-    .badge-soft { background: #f3e8ff; color: #6b21a8; padding: 5px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+    .badge-soft { background: #f3e8ff; color: #6b21a8; padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
 
     .form-control, .form-select { border-radius: 99px; padding: 10px 20px; border-color: #e5e7eb; background: #f9fafb; font-size: 0.9rem; }
     .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
@@ -44,6 +46,37 @@
     .btn-remove:hover { text-decoration: underline; }
 
     footer { border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px; display: flex; justify-content: space-between; color: #9ca3af; font-size: 0.85rem; }
+
+    /* ========================================= */
+    /* MODIFIKASI RESPONSIVE (LAYOUT MOBILE)     */
+    /* ========================================= */
+    @media (max-width: 576px) {
+      /* 1. Body & Shell */
+      body { padding: 15px 10px; }
+      .app-shell { padding: 20px 15px; border-radius: 20px; }
+
+      /* 2. Header */
+      .top-bar { flex-wrap: wrap; }
+      .logo-top { height: 35px; margin-left: auto; } /* Logo geser ke kanan */
+
+      /* 3. Card & Form */
+      .card-soft { padding: 20px 15px; border-radius: 18px; margin-bottom: 25px; }
+      .card-soft-header { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 15px; }
+      
+      .form-control, .form-select { 
+        font-size: 16px; /* Mencegah auto-zoom iOS */
+        padding: 10px 15px; 
+      }
+
+      /* 4. Penghuni Card (Agar tidak terlalu rapat di HP) */
+      .penghuni-card { padding: 15px; margin-bottom: 12px; }
+      
+      /* 5. Tombol Simpan Full Width */
+      .btn-pill-main { width: 100%; margin-top: 10px; }
+
+      /* 6. Footer */
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
   </style>
 </head>
 <body>

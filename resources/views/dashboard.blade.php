@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Laman Utama RumahAduan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Viewport Mobile Friendly (Updated) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +16,7 @@
         70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
-    /* CSS TEMANMU (PERSIS) */
+    /* CSS TEMANMU (PERSIS - BASE) */
     :root {
       --purple: #6d28d9; --purple-soft: #a855f7; --purple-dark: #4c1d95;
       --bg-soft: #f5f3ff; --text-main: #111827; --text-muted: #6b7280;
@@ -100,7 +101,53 @@
     footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e5e7eb; font-size: 0.8rem; color: var(--text-muted); }
     footer img { height: 28px; }
 
-    @media (max-width: 780px) { .feature-row { grid-template-columns: 1fr; } .hero-banner { height: 280px; } footer { flex-direction: column; gap: 6px; } }
+    /* ========================================= */
+    /* MODIFIKASI RESPONSIVE (LAYOUT MOBILE)     */
+    /* ========================================= */
+    @media (max-width: 576px) {
+      /* 1. Body & Container lebih lega */
+      body { padding: 15px 10px; }
+      .app-shell { padding: 20px 15px; border-radius: 20px; }
+
+      /* 2. Header (Top Bar) */
+      .top-bar { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+      .left-header { width: 100%; justify-content: space-between; } /* Nama user & logo sejajar */
+      .logo-top { height: 35px; } /* Logo sedikit dikecilkan */
+      .profile-text h1 { font-size: 1.1rem; } /* Font nama user disesuaikan */
+      
+      /* Tombol Profil & Logout (Supaya ga dempet) */
+      .btn-action { padding: 5px 12px; font-size: 0.75rem; margin-top: 5px; display: inline-block; }
+
+      /* 3. Sub-Header (Teks Selamat Datang) */
+      .sub-header { flex-direction: column; align-items: flex-start; gap: 10px; font-size: 0.8rem; }
+
+      /* 4. Hero Banner (Slider) */
+      .hero-banner { 
+        height: 220px; /* Tinggi slider dikurangi drastis agar tidak menuhin layar HP */
+        border-radius: 18px; 
+      }
+      .hero-overlay-wrapper { padding: 15px; }
+      .big-logo { height: 60px !important; } /* Logo di slider dikecilkan */
+      .blok-outline { font-size: 0.7rem; padding: 4px 10px; }
+
+      /* 5. Menu Grid (Akses Cepat) */
+      .feature-row { 
+        grid-template-columns: 1fr; /* Jadi 1 kolom ke bawah */
+        gap: 15px;
+      }
+      .feature-card { padding: 20px 15px; } /* Padding dalam kartu */
+
+      /* 6. Info & Peta */
+      .pill-card { padding: 15px; }
+      .info-table th, .info-table td { 
+        padding: 8px 5px; 
+        font-size: 0.75rem; /* Font tabel dikecilkan sedikit */
+      }
+      .map-box iframe { height: 200px; }
+
+      /* 7. Footer */
+      footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -133,9 +180,10 @@
             </form>
         </div>
       </div>
+      
+      <!-- Logo dipindah ke kanan di mobile via flexbox -->
+      <img src="{{ asset('images/logo-rumah-aduan.png') }}" class="logo-top" alt="RumahAduan" onerror="this.style.display='none'">
     </div>
-
-    <img src="{{ asset('images/logo-rumah-aduan.png') }}" class="logo-top" alt="RumahAduan" onerror="this.style.display='none'">
   </header>
 
   <div class="sub-header">
