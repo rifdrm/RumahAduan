@@ -4,59 +4,145 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Pengaduan;
-use App\Models\MasterWarga;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
     // === HALAMAN DASHBOARD ADMIN ===
     public function index()
     {
-        // 1. Ambil data warga yang statusnya PENDING (Butuh Verifikasi)
-        $pendingUsers = User::where('status_akun', 'pending')->get();
-
-        // 2. Ambil semua laporan pengaduan (Urutkan dari yang terbaru)
+        // 1. Data Tabel (Seperti Sebelumnya)
         $laporans = Pengaduan::with('user')->latest()->get();
+        $wargas = User::where('role', 'warga')->with('masterWarga')->latest()->get();
 
-        // 3. Kirim data ke tampilan dashboard admin
-        return view('admin.dashboard', compact('pendingUsers', 'laporans'));
-    }
+        // 2. DATA GRAFIK 1: KATEGORI (Doughnut Chart)
+        // Menghitung jumlah laporan per kategori
+        // Hasil: ['Sampah' => 5, 'Keamanan' => 2, ...]
+        $grafikKategori = Pengaduan::selectRaw('kategori, count(*) as total')
+                            ->groupBy('kategori')
+                            ->pluck('total', 'kategori');
 
-    // === LOGIKA VERIFIKASI WARGA (SUDAH DIPERBAIKI) ===
-    public function verifikasiWarga(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        
-        // Validasi Input (Action: approve / reject)
-        $action = $request->input('action');
-
-        if ($action == 'approve') {
-            // FIX: Tidak perlu cari No KK lagi karena sudah tersimpan di master_warga_id saat register
-            // Cukup ubah status jadi active
-            $user->status_akun = 'active';
-            $user->save();
+        // 3. DATA GRAFIK 2: TREN HARIAN (Line Chart - 7 Hari Terakhir)
+        // Kita siapkan array kosong untuk 7 hari ke belakang
+        $grafikTren = [];
+        for ($i = 6; $i >= 0; $i--) {
+            // Ambil tanggal (H-6 sampai Hari Ini)
+            $date = now()->subDays($i)->format('Y-m-d');
             
-            return back()->with('success', 'Akun warga berhasil diaktifkan. Sekarang mereka bisa login.');
-        } 
-        
-        elseif ($action == 'reject') {
-            $user->status_akun = 'rejected';
-            $user->alasan_penolakan = $request->input('alasan'); // Simpan alasan
-            $user->save();
-
-            return back()->with('success', 'Akun warga ditolak.');
+            // Hitung jumlah laporan pada tanggal tersebut
+            $jumlah = Pengaduan::whereDate('created_at', $date)->count();
+            
+            // Masukkan ke array (Format: '04 Dec' => 5)
+            $grafikTren[now()->subDays($i)->format('d M')] = $jumlah;
         }
+
+        return view('admin.dashboard', compact('laporans', 'wargas', 'grafikKategori', 'grafikTren'));
     }
 
-    // === LOGIKA UPDATE STATUS LAPORAN ===
+
+    // === UPDATE STATUS LAPORAN ===
+
     public function updateStatusLaporan(Request $request, $id)
     {
-        $laporan = Pengaduan::findOrFail($id);
-        
-        $laporan->status = $request->status; // Diproses / Selesai / Ditolak
-        $laporan->tanggapan_admin = $request->tanggapan; // Pesan balik ke warga
-        $laporan->save();
+    $laporan = Pengaduan::findOrFail($id);
 
-        return back()->with('success', 'Status laporan diperbarui.');
+    $laporan->status = $request->status;
+    $laporan->tanggapan_admin = $request->tanggapan;
+
+    // --- TAMBAHAN: NYALAKAN NOTIFIKASI ---
+    $laporan->is_unread = 1; // Tandai sebagai belum dibaca oleh warga
+    // -------------------------------------
+
+    $laporan->save();
+
+    return back()->with('success', 'Status laporan diperbarui & notifikasi dikirim ke warga.');
+    }
+
+    // === HAPUS AKUN WARGA (FITUR BARU) ===
+    public function destroyUser($id)
+    {
+        // Cari user berdasarkan ID
+        $user = User::findOrFail($id);
+
+        // Pastikan yang dihapus bukan admin sendiri (Safety check)
+        if ($user->role === 'admin') {
+            return back()->with('error', 'Anda tidak bisa menghapus akun Admin!');
+        }
+
+        // Hapus User
+        // Note: Karena kita set 'onDelete cascade' di database, 
+        // semua laporan & data keluarga user ini akan otomatis terhapus juga.
+        $user->delete();
+
+        return back()->with('success', 'Akun warga berhasil dihapus bersih.');
+    }
+
+    // === FITUR EXPORT LAPORAN (CSV / EXCEL) ===
+    public function exportLaporan()
+    {
+        // 1. Ambil data laporan sebulan terakhir
+        $laporans = Pengaduan::with('user')
+                    ->where('created_at', '>=', now()->subMonth()) // Filter 1 bulan
+                    ->latest()
+                    ->get();
+
+        // 2. Nama File saat didownload
+        $fileName = 'Laporan_Warga_' . date('Y-m-d_H-i') . '.csv';
+
+        // 3. Header agar browser tahu ini file Excel/CSV
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        // 4. Fungsi Callback untuk menulis isi file
+        $callback = function() use ($laporans) {
+            $file = fopen('php://output', 'w');
+
+            // Header Kolom (Baris Pertama)
+            fputcsv($file, ['No', 'Tanggal', 'Pelapor', 'Judul Laporan', 'Lokasi', 'Kategori', 'Status', 'Isi Laporan', 'Tanggapan Admin']);
+
+            // Isi Data (Looping)
+            foreach ($laporans as $index => $row) {
+                fputcsv($file, [
+                    $index + 1,
+                    $row->created_at->format('d-m-Y H:i'),
+                    $row->user->name ?? 'Anonim',
+                    $row->judul_laporan,
+                    $row->lokasi_kejadian,
+                    $row->kategori,
+                    $row->status,
+                    $row->deskripsi,
+                    $row->tanggapan_admin ?? '-'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        // 5. Download File
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // === FITUR EXPORT PDF (RESMI) ===
+    public function exportPdf()
+    {
+        // 1. Ambil data (sama seperti excel)
+        $laporans = Pengaduan::with('user')
+                    ->where('created_at', '>=', now()->subMonth())
+                    ->latest()
+                    ->get();
+
+        // 2. Load View khusus PDF dan kirim datanya
+        $pdf = Pdf::loadView('admin.pdf_report', compact('laporans'));
+
+        // 3. Download file
+        return $pdf->stream('Laporan_Resmi_Bulanan.pdf');
+        
+        // Opsional: Kalau mau lihat di browser dulu (preview), ganti ->download() jadi ->stream()
     }
 }

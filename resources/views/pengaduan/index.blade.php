@@ -204,9 +204,10 @@
                     </td>
 
                     <!-- Foto (Klik untuk lihat full) -->
-                    <td>
-                        <a href="{{ asset('storage/'.$laporan->foto_bukti) }}" target="_blank">
-                            <img src="{{ asset('storage/'.$laporan->foto_bukti) }}" alt="Bukti" class="foto-icon">
+                    <td class="text-center">
+                        <!-- Menggunakan ASSET (Link langsung) -->
+                        <a href="{{ asset('storage/' . $laporan->foto_bukti) }}" target="_blank">
+                            <img src="{{ asset('storage/' . $laporan->foto_bukti) }}" class="foto-icon" alt="Bukti">
                         </a>
                     </td>
                 </tr>

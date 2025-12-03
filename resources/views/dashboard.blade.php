@@ -9,6 +9,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
+
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
     /* CSS TEMANMU (PERSIS) */
     :root {
       --purple: #6d28d9; --purple-soft: #a855f7; --purple-dark: #4c1d95;
@@ -176,14 +182,28 @@
 
     <div class="feature-row">
       <!-- Jejak Aduan -->
-      <a href="{{ route('pengaduan.index') }}" class="feature-card purple-grad">
-        <div class="feature-header">
-          <div class="feature-icon-wrap">📜</div>
-          <div>
-            <div class="feature-title">Jejak Aduan</div>
-            <div class="feature-sub">Lihat riwayat & status penanganan aduan.</div>
-          </div>
-        </div>
+        <a href="{{ route('pengaduan.index') }}" class="feature-card purple-grad" style="position: relative;">
+            
+            <!-- NOTIFIKASI BADGE (Hanya muncul jika ada pesan belum dibaca) -->
+            @if(isset($unreadCount) && $unreadCount > 0)
+                <div style="position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.2); animation: pulse 2s infinite;">
+                    {{ $unreadCount }}
+                </div>
+            @endif
+
+            <div class="feature-header">
+            <div class="feature-icon-wrap">📜</div>
+            <div>
+                <div class="feature-title">Jejak Aduan</div>
+                <div class="feature-sub">
+                    @if(isset($unreadCount) && $unreadCount > 0)
+                        <span style="color: #fbbf24; font-weight: bold;">{{ $unreadCount }} update baru dari Admin!</span>
+                    @else
+                        Lihat riwayat & status penanganan.
+                    @endif
+                </div>
+            </div>
+            </div>
         <!-- Menghitung Jumlah Laporan User Ini -->
         @php
             $jumlahLaporan = \App\Models\Pengaduan::where('user_id', Auth::id())->count();

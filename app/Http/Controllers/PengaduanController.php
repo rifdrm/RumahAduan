@@ -13,11 +13,16 @@ class PengaduanController extends Controller
      */
     public function index()
     {
-        // Ambil pengaduan DARI user yang sedang login saja (Where user_id = Auth::id)
-        // Urutkan dari yang terbaru (latest)
+        // 1. Ambil Laporan
         $laporans = Pengaduan::where('user_id', Auth::id())
                             ->latest()
                             ->get();
+
+        // 2. MATIKAN NOTIFIKASI (Reset is_unread jadi 0)
+        // Kita update semua laporan milik user ini yang statusnya unread
+        Pengaduan::where('user_id', Auth::id())
+                    ->where('is_unread', 1)
+                    ->update(['is_unread' => 0]);
 
         return view('pengaduan.index', compact('laporans'));
     }

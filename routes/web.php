@@ -5,6 +5,7 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\AdminController; // Pastikan import ini ada
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 // --- LOGIKA UTAMA (ROOT URL) ---
 Route::get('/', function () {
@@ -42,6 +43,18 @@ Route::middleware(['auth', 'cek.aktif'])->group(function () {
     
     // Dashboard Utama
     Route::get('/dashboard', function () {
+        if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    // --- HITUNG JUMLAH NOTIFIKASI ---
+    // Hitung berapa laporan milik user ini yang is_unread = 1
+    $unreadCount = \App\Models\Pengaduan::where('user_id', Auth::id())
+                                        ->where('is_unread', 1)
+                                        ->count();
+
+        return view('dashboard', compact('unreadCount')); // Kirim variabel ke view
+    })->name('dashboard');
         return view('dashboard');
     })->name('dashboard');
 
@@ -55,7 +68,7 @@ Route::middleware(['auth', 'cek.aktif'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+
 
 Route::middleware(['auth', 'cek.aktif'])->group(function () {
     
@@ -74,6 +87,9 @@ Route::middleware(['auth', 'cek.aktif'])->group(function () {
         Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard');
         Route::post('/admin/verifikasi/{id}', [App\Http\Controllers\AdminController::class, 'verifikasiWarga'])->name('admin.verifikasi');
         Route::patch('/admin/laporan/{id}', [App\Http\Controllers\AdminController::class, 'updateStatusLaporan'])->name('admin.laporan.update');
+        Route::delete('/admin/warga/{id}', [AdminController::class, 'destroyUser'])->name('admin.warga.destroy');
+        Route::get('/admin/export', [AdminController::class, 'exportLaporan'])->name('admin.laporan.export');
+        Route::get('/admin/export-pdf', [AdminController::class, 'exportPdf'])->name('admin.laporan.export_pdf');
     });
 
     // ... Route Pengaduan Warga (yang sudah dibuat sebelumnya) ...
