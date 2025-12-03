@@ -1,15 +1,32 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PengaduanController; // Pastikan controller ini di-import
+use App\Http\Controllers\PengaduanController;
+use App\Http\Controllers\AdminController; // Pastikan import ini ada
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
+// --- LOGIKA UTAMA (ROOT URL) ---
 Route::get('/', function () {
-    return view('welcome');
+    // 1. Cek apakah user sudah login (punya sesi/cache)
+    if (Auth::check()) {
+        
+        // 2. Jika ADMIN -> Ke Dashboard Admin
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // 3. Jika WARGA -> Ke Dashboard Warga
+        return redirect()->route('dashboard');
+    }
+
+    // 4. Jika BELUM LOGIN -> Arahkan ke halaman Login
+    return redirect()->route('login');
 });
 
 // Jalur Login/Register/Logout bawaan Breeze
 require __DIR__.'/auth.php';
+
 
 // --- AREA WARGA ---
 
