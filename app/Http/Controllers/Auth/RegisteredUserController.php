@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\MasterWarga; // Jangan lupa import ini
+use App\Models\MasterWarga;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,46 +15,36 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
-        // 1. Validasi Input
+        // 1. Validasi Input (Sistem Satpam Otomatis)
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // Cek tabel master_wargas kolom no_kk. Jika tidak ada, tolak!
+            // KUNCI UTAMA: Cek apakah No KK ada di tabel master_wargas?
             'no_kk' => ['required', 'string', 'exists:master_wargas,no_kk'], 
             'no_hp' => ['required', 'string', 'max:15'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'foto_kk' => ['required', 'image', 'max:2048'], // Max 2MB
+            'foto_kk' => ['required', 'image', 'max:2048'], 
         ], [
-            // Pesan Error Custom (Bahasa Indonesia)
-            'no_kk.exists' => 'Maaf, Nomor KK ini belum terdaftar di Data Warga RT. Silakan hubungi Pak RT.',
+            'no_kk.exists' => 'Nomor KK tidak dikenali! Pastikan Anda warga terdaftar.',
         ]);
 
-        // 2. Upload Foto (Jika ada)
+        // 2. Upload Foto (Tetap kita simpan sebagai arsip admin)
         $pathFoto = null;
         if ($request->hasFile('foto_kk')) {
-            // Simpan ke folder storage/app/public/bukti_kk
             $pathFoto = $request->file('foto_kk')->store('bukti_kk', 'public');
         }
 
-        // 3. Cari Data Master Warga berdasarkan No KK
+        // 3. Ambil ID Master Warga
         $wargaAsli = MasterWarga::where('no_kk', $request->no_kk)->first();
 
-        // 4. Buat User Baru
+        // 4. Buat User Baru (LANGSUNG ACTIVE)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -62,14 +52,15 @@ class RegisteredUserController extends Controller
             'no_hp' => $request->no_hp,
             'foto_kk' => $pathFoto,
             'role' => 'warga',
-            'status_akun' => 'pending', // Default pending, nunggu admin klik approve
-            'master_warga_id' => $wargaAsli->id, // Langsung link ke rumah asli
+            'status_akun' => 'active', // <--- PERUBAHAN DISINI (Auto Approve)
+            'master_warga_id' => $wargaAsli->id, 
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
+        // Langsung masuk dashboard, tidak perlu ke ruang tunggu
         return redirect(route('dashboard', absolute: false));
     }
 }

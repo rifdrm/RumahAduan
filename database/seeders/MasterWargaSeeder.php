@@ -32,14 +32,14 @@ class MasterWargaSeeder extends Seeder
             'status_rumah' => 'Dihuni',
         ]);
 
-        // Data 3: Rumah Kosong
+        // Data 2: Warga Lain
         \App\Models\MasterWarga::create([
             'no_kk' => '3201010001000003',
-            'nama_kepala_keluarga' => 'Agus (Pemilik Lama)',
-            'blok' => 'B3',
-            'no_rumah' => '05',
-            'rt_rw' => '002/005',
-            'status_rumah' => 'Kosong',
+            'nama_kepala_keluarga' => 'Lutpi',
+            'blok' => 'A1',
+            'no_rumah' => '12',
+            'rt_rw' => '001/005',
+            'status_rumah' => 'Dihuni',
         ]);
     }
 }
