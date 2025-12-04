@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin Pak RT',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin3@gmail.com',
             'password' => Hash::make('admin123'), // Password login
             'role' => 'admin',           // <--- PENTING: Role admin
             'status_akun' => 'active',   // Langsung aktif

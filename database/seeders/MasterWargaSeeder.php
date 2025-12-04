@@ -14,7 +14,7 @@ class MasterWargaSeeder extends Seeder
     {
         // Data 1: Warga Asli (Nanti kita coba daftar pakai data ini)
         \App\Models\MasterWarga::create([
-            'no_kk' => '3201010001000001',
+            'no_kk' => '3201010001000069',
             'nama_kepala_keluarga' => 'Budi Santoso',
             'blok' => 'A1',
             'no_rumah' => '10',
@@ -24,7 +24,7 @@ class MasterWargaSeeder extends Seeder
 
         // Data 2: Warga Lain
         \App\Models\MasterWarga::create([
-            'no_kk' => '3201010001000002',
+            'no_kk' => '3201010001000070',
             'nama_kepala_keluarga' => 'Siti Aminah',
             'blok' => 'A1',
             'no_rumah' => '11',
@@ -34,7 +34,7 @@ class MasterWargaSeeder extends Seeder
 
         // Data 2: Warga Lain
         \App\Models\MasterWarga::create([
-            'no_kk' => '3201010001000003',
+            'no_kk' => '3201010001000071',
             'nama_kepala_keluarga' => 'Lutpi',
             'blok' => 'A1',
             'no_rumah' => '12',
