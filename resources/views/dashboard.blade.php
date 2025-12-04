@@ -148,9 +148,11 @@
       /* 7. Footer */
       footer { flex-direction: column; gap: 10px; text-align: center; }
     }
-  </style>
+    </style>
 
-<link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
 </head>
 <body>

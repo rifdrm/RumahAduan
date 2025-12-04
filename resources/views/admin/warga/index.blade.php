@@ -17,6 +17,11 @@
     .muted { color: #9ca3af; }
     .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; }
   </style>
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+
 </head>
 <body>
 <div style="max-width:1100px;margin:0 auto;">

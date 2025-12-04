@@ -67,7 +67,9 @@
     .bg-ditolak { background: #fee2e2; color: #991b1b; }
   </style>
 
-<link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
 </head>
 <body>
