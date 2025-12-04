@@ -106,6 +106,9 @@
       .form-input { height: 45px; font-size: 16px; /* Mencegah zoom otomatis di iOS */ }
     }
   </style>
+
+<link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+
 </head>
 
 <body>

@@ -41,5 +41,16 @@ class MasterWargaSeeder extends Seeder
             'rt_rw' => '001/005',
             'status_rumah' => 'Dihuni',
         ]);
+
+        // Data 2: Warga Lain
+        \App\Models\MasterWarga::create([
+            'no_kk' => '3201010001000003',
+            'nama_kepala_keluarga' => 'Lutpi',
+            'blok' => 'A1',
+            'no_rumah' => '12',
+            'rt_rw' => '001/005',
+            'status_rumah' => 'Dihuni',
+        ]);
+
     }
 }

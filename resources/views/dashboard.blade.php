@@ -149,6 +149,9 @@
       footer { flex-direction: column; gap: 10px; text-align: center; }
     }
   </style>
+
+<link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+
 </head>
 <body>
 

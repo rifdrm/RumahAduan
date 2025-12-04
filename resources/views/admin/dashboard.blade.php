@@ -66,6 +66,9 @@
     .bg-selesai { background: #dcfce7; color: #166534; }
     .bg-ditolak { background: #fee2e2; color: #991b1b; }
   </style>
+
+<link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+
 </head>
 <body>
 
