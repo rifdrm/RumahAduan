@@ -137,20 +137,22 @@
 
   <!-- ================= TABEL 1: LAPORAN MASUK ================= -->
 <section class="card-soft">
-    <div class="card-header-flex">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <!-- Judul Kiri -->
-        <div class="card-title">
+        <div class="card-title" style="margin-bottom: 0;">
             <span>📨 Laporan Masuk</span>
             <span class="badge-count">{{ $laporans->count() }}</span>
         </div>
 
-        <!-- Tombol Kanan (BARU) -->
-        <a href="{{ route('admin.laporan.export') }}" class="btn btn-success btn-sm d-flex align-items-center gap-2" style="border-radius: 99px; padding: 8px 20px; font-weight: 600;">
-            📥 Download Excel (30 Hari)
-        </a>
-        <a href="{{ route('admin.laporan.export_pdf') }}" class="btn btn-danger btn-sm d-flex align-items-center gap-2" style="border-radius: 99px; padding: 8px 15px; font-weight: 600; font-size: 0.75rem;">
-            📄 PDF Resmi
-        </a>
+        <!-- Tombol Kanan -->
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{{ route('admin.laporan.export') }}" class="btn btn-success btn-sm d-flex align-items-center gap-2" style="border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);">
+                📥 Excel (30 Hari)
+            </a>
+            <a href="{{ route('admin.laporan.export_pdf') }}" class="btn btn-danger btn-sm d-flex align-items-center gap-2" style="border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);">
+                📄 PDF
+            </a>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -213,10 +215,10 @@
     </div>
   </section>
 
-  <!-- ================= TABEL 2: MANAJEMEN WARGA (BARU) ================= -->
+  <!-- ================= TABEL 2: DAFTAR WARGA ================= -->
   <section class="card-soft">
     <div class="card-title">
-        <span>👥 Manajemen Warga Terdaftar</span>
+        <span>👥 Daftar Warga Terdaftar</span>
         <span class="badge-count">{{ $wargas->count() }}</span>
     </div>
 
@@ -235,37 +237,45 @@
                 @forelse($wargas as $warga)
                 <tr>
                     <td>
-                        <div style="font-weight: 700;">{{ $warga->name }}</div>
+                        <div style="font-weight: 700; color: var(--text-main);">{{ $warga->name }}</div>
                         <div style="font-size: 0.75rem; color: #94a3b8;">Bergabung: {{ $warga->created_at->format('d M Y') }}</div>
                     </td>
                     <td>
-                        <span style="font-family: monospace; font-size: 0.9rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">
+                        <span style="font-family: monospace; font-size: 0.9rem; background: #f1f5f9; padding: 6px 10px; border-radius: 8px; font-weight: 600; color: #1e3a8a;">
                             {{ $warga->masterWarga->no_kk ?? '-' }}
                         </span>
                     </td>
                     <td>
-                        <div style="font-size: 0.85rem;">📧 {{ $warga->email }}</div>
-                        <div style="font-size: 0.85rem;">📞 {{ $warga->no_hp ?? '-' }}</div>
+                        <div style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                            <span>📧</span> 
+                            <span style="color: #1e40af; word-break: break-all;">{{ $warga->email }}</span>
+                        </div>
+                        <div style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                            <span>📞</span> 
+                            <span style="color: #1e40af;">{{ $warga->no_hp ?? '-' }}</span>
+                        </div>
                     </td>
                     <td>
-                        @if($warga->masterWarga)
-                            Blok {{ $warga->masterWarga->blok }} No. {{ $warga->masterWarga->no_rumah }}
-                        @else
-                            <span class="text-muted">-</span>
-                        @endif
+                        <div style="font-size: 0.9rem; font-weight: 500; color: #374151;">
+                            @if($warga->masterWarga)
+                                📍 Blok {{ $warga->masterWarga->blok }} No. {{ $warga->masterWarga->no_rumah }}
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </div>
                     </td>
                     <td class="text-center">
                         <form action="{{ route('admin.warga.destroy', $warga->id) }}" method="POST" onsubmit="return confirm('⚠️ Yakin ingin menghapus akun ini?\n\nSemua data laporan dan anggota keluarga akun ini akan ikut terhapus permanen!');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-delete">
+                            <button type="submit" class="btn-delete" style="width: 100%; padding: 8px 12px; border-radius: 8px;">
                                 🗑️ Hapus
                             </button>
                         </form>
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada warga terdaftar.</td></tr>
+                <tr><td colspan="5" class="text-center py-6" style="padding: 20px 16px; color: #9ca3af; font-size: 0.9rem;">Belum ada warga terdaftar.</td></tr>
                 @endforelse
             </tbody>
         </table>
