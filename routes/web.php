@@ -90,6 +90,11 @@ Route::middleware(['auth', 'cek.aktif'])->group(function () {
         Route::delete('/admin/warga/{id}', [AdminController::class, 'destroyUser'])->name('admin.warga.destroy');
         Route::get('/admin/export', [AdminController::class, 'exportLaporan'])->name('admin.laporan.export');
         Route::get('/admin/export-pdf', [AdminController::class, 'exportPdf'])->name('admin.laporan.export_pdf');
+        // Manajemen Master Warga (List / Manual Create / Import CSV)
+        Route::get('/admin/warga', [App\Http\Controllers\AdminController::class, 'masterWargaIndex'])->name('admin.warga.index');
+        Route::post('/admin/warga', [App\Http\Controllers\AdminController::class, 'storeMasterWarga'])->name('admin.warga.store');
+        Route::post('/admin/warga/import', [App\Http\Controllers\AdminController::class, 'importMasterWarga'])->name('admin.warga.import');
+        Route::delete('/admin/warga/master/{id}', [App\Http\Controllers\AdminController::class, 'destroyMasterWarga'])->name('admin.warga.master.destroy');
     });
 
     // ... Route Pengaduan Warga (yang sudah dibuat sebelumnya) ...

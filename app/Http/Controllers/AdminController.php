@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Pengaduan;
+use App\Models\MasterWarga;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -38,6 +39,139 @@ class AdminController extends Controller
         }
 
         return view('admin.dashboard', compact('laporans', 'wargas', 'grafikKategori', 'grafikTren'));
+    }
+
+    // === HALAMAN & LOGIC MANAJEMEN MASTER WARGA ===
+    public function masterWargaIndex(Request $request)
+    {
+        $q = $request->query('q');
+
+        $masters = MasterWarga::with('user')
+            ->when($q, function($query) use ($q) {
+                $query->where('no_kk', 'like', "%{$q}%")
+                      ->orWhere('nama_kepala_keluarga', 'like', "%{$q}%")
+                      ->orWhere('blok', 'like', "%{$q}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.warga.index', compact('masters', 'q'));
+    }
+
+    // Simpan Manual (Tambah / Update berdasarkan no_kk)
+    public function storeMasterWarga(Request $request)
+    {
+        $data = $request->validate([
+            'no_kk' => 'required|string|max:16',
+            'nama_kepala_keluarga' => 'required|string|max:255',
+            'blok' => 'required|string|max:10',
+            'no_rumah' => 'required|string|max:10',
+            'rt_rw' => 'nullable|string|max:10',
+            'status_rumah' => 'nullable|in:Dihuni,Kosong'
+        ]);
+
+        $master = MasterWarga::updateOrCreate(
+            ['no_kk' => $data['no_kk']],
+            [
+                'nama_kepala_keluarga' => $data['nama_kepala_keluarga'],
+                'blok' => $data['blok'],
+                'no_rumah' => $data['no_rumah'],
+                'rt_rw' => $data['rt_rw'] ?? null,
+                'status_rumah' => $data['status_rumah'] ?? 'Dihuni'
+            ]
+        );
+
+        return back()->with('success', 'Data master warga berhasil disimpan.');
+    }
+
+    // Import CSV sederhana tanpa library eksternal
+    public function importMasterWarga(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+
+        $handle = fopen($path, 'r');
+        if ($handle === false) {
+            return back()->with('error', 'Gagal membuka file CSV.');
+        }
+
+        $header = null;
+        $rowCount = 0; $created = 0; $updated = 0; $skipped = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($handle, 0, ',')) !== false) {
+            // Jika header belum di-set, gunakan baris pertama sebagai header
+            if (!$header) {
+                $header = array_map(function($h){ return strtolower(trim($h)); }, $row);
+                continue;
+            }
+
+            $rowCount++;
+            $data = array_combine($header, $row);
+            if (!$data) { $skipped++; $errors[] = "Baris {$rowCount}: gagal membaca kolom."; continue; }
+
+            // Ambil dan bersihkan no_kk
+            $noKKraw = $data['no_kk'] ?? '';
+            $noKK = preg_replace('/\D/', '', $noKKraw); // hanya digit
+
+            // Validasi ketat no_kk: harus numeric dan panjang 8-16
+            if (empty($noKK) || strlen($noKK) < 8 || strlen($noKK) > 16) {
+                $skipped++; $errors[] = "Baris {$rowCount}: no_kk tidak valid ('{$noKKraw}').";
+                continue;
+            }
+
+            // Siapkan payload dengan trim dan batas panjang
+            $payload = [
+                'nama_kepala_keluarga' => substr(trim($data['nama_kepala_keluarga'] ?? ($data['nama'] ?? 'Unknown')), 0, 255),
+                'blok' => substr(trim($data['blok'] ?? ($data['blok_rumah'] ?? '')), 0, 10),
+                'no_rumah' => substr(trim($data['no_rumah'] ?? ($data['nomor'] ?? '')), 0, 10),
+                'rt_rw' => substr(trim($data['rt_rw'] ?? ''), 0, 10),
+                'status_rumah' => in_array(trim($data['status_rumah'] ?? 'Dihuni'), ['Dihuni','Kosong']) ? trim($data['status_rumah']) : 'Dihuni'
+            ];
+
+            // UpdateOrCreate berdasarkan no_kk
+            $existing = MasterWarga::where('no_kk', $noKK)->first();
+            if ($existing) {
+                $existing->update($payload);
+                $updated++;
+            } else {
+                MasterWarga::create(array_merge(['no_kk' => $noKK], $payload));
+                $created++;
+            }
+        }
+
+        fclose($handle);
+
+        $summary = "Import selesai: total baris={$rowCount}, dibuat={$created}, diperbarui={$updated}, dilewati={$skipped}.";
+        if (!empty($errors)) {
+            $summary .= ' Contoh error: ' . implode(' | ', array_slice($errors, 0, 5));
+        }
+
+        return back()->with('success', $summary);
+    }
+
+    // Hapus master warga
+    public function destroyMasterWarga($id)
+    {
+        $master = MasterWarga::with('user')->findOrFail($id);
+
+        // Hapus user terkait (jika ada) agar data di database konsisten
+        \DB::transaction(function() use ($master) {
+            if ($master->user) {
+                // Menghapus user akan menghapus pengaduan & anggota keluarga (cascade di migration)
+                $master->user->delete();
+            }
+
+            // Hapus master warga
+            $master->delete();
+        });
+
+        return back()->with('success', 'Data master warga dan akun terkait berhasil dihapus.');
     }
 
 

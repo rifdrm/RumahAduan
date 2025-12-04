@@ -106,6 +106,18 @@
   @endif
 
   <!-- ================= SECTION GRAFIK STATISTIK (BARU) ================= -->
+    <!-- ================= QUICK ACCESS: MASTER WARGA (DI ATAS) ================= -->
+    <section style="margin-bottom: 18px;">
+        <div class="card-soft" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div class="card-title" style="margin-bottom:6px;">👥 Master Warga</div>
+                <div style="color:#6b7280;">Kelola data kepala keluarga — tambah manual atau import CSV (bulk).</div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <a href="{{ route('admin.warga.index') }}" class="btn btn-primary" style="border-radius:12px; padding:10px 16px; font-weight:700;">🔧 Kelola Master Warga</a>
+            </div>
+        </div>
+    </section>
   <section style="margin-bottom: 30px;">
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
         
@@ -215,72 +227,6 @@
     </div>
   </section>
 
-  <!-- ================= TABEL 2: DAFTAR WARGA ================= -->
-  <section class="card-soft">
-    <div class="card-title">
-        <span>👥 Daftar Warga Terdaftar</span>
-        <span class="badge-count">{{ $wargas->count() }}</span>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table-admin">
-            <thead>
-                <tr>
-                    <th width="25%">Nama Keluarga</th>
-                    <th width="20%">No KK</th>
-                    <th width="20%">Kontak</th>
-                    <th width="20%">Alamat</th>
-                    <th width="15%" class="text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($wargas as $warga)
-                <tr>
-                    <td>
-                        <div style="font-weight: 700; color: var(--text-main);">{{ $warga->name }}</div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">Bergabung: {{ $warga->created_at->format('d M Y') }}</div>
-                    </td>
-                    <td>
-                        <span style="font-family: monospace; font-size: 0.9rem; background: #f1f5f9; padding: 6px 10px; border-radius: 8px; font-weight: 600; color: #1e3a8a;">
-                            {{ $warga->masterWarga->no_kk ?? '-' }}
-                        </span>
-                    </td>
-                    <td>
-                        <div style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                            <span>📧</span> 
-                            <span style="color: #1e40af; word-break: break-all;">{{ $warga->email }}</span>
-                        </div>
-                        <div style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                            <span>📞</span> 
-                            <span style="color: #1e40af;">{{ $warga->no_hp ?? '-' }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="font-size: 0.9rem; font-weight: 500; color: #374151;">
-                            @if($warga->masterWarga)
-                                📍 Blok {{ $warga->masterWarga->blok }} No. {{ $warga->masterWarga->no_rumah }}
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </div>
-                    </td>
-                    <td class="text-center">
-                        <form action="{{ route('admin.warga.destroy', $warga->id) }}" method="POST" onsubmit="return confirm('⚠️ Yakin ingin menghapus akun ini?\n\nSemua data laporan dan anggota keluarga akun ini akan ikut terhapus permanen!');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-delete" style="width: 100%; padding: 8px 12px; border-radius: 8px;">
-                                🗑️ Hapus
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="5" class="text-center py-6" style="padding: 20px 16px; color: #9ca3af; font-size: 0.9rem;">Belum ada warga terdaftar.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-  </section>
 
 </div>
 
