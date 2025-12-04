@@ -18,5 +18,23 @@ class AdminSeeder extends Seeder
             'status_akun' => 'active',   // Langsung aktif
             'no_hp' => '081299999999',
         ]);
+
+        User::create([
+            'name' => 'Admin 1',
+            'email' => 'admin1@gmail.com',
+            'password' => Hash::make('admin123'), // Password login
+            'role' => 'admin',           // <--- PENTING: Role admin
+            'status_akun' => 'active',   // Langsung aktif
+            'no_hp' => '081299999999',
+        ]);
+
+        User::create([
+            'name' => 'Admin 2',
+            'email' => 'admin2@gmail.com',
+            'password' => Hash::make('admin123'), // Password login
+            'role' => 'admin',           // <--- PENTING: Role admin
+            'status_akun' => 'active',   // Langsung aktif
+            'no_hp' => '081299999999',
+        ]);
     }
 }
