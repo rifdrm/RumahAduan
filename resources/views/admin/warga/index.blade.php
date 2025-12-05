@@ -42,7 +42,7 @@
   <div class="card-soft" style="margin-bottom:18px;">
     <div style="display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start;">
       <div>
-        <div style="font-weight:700;margin-bottom:8px;">Tambah Manual (1-2 data)</div>
+        <div style="font-weight:700;margin-bottom:8px;">Tambah Manual</div>
         <form action="{{ route('admin.warga.store') }}" method="POST">
           @csrf
           <div class="form-row">
@@ -63,14 +63,14 @@
       </div>
 
       <div>
-        <div style="font-weight:700;margin-bottom:8px;">Import CSV (Bulk)</div>
+        <div style="font-weight:700;margin-bottom:8px;">Import CSV</div>
         <div style="font-size:0.9rem;color:#6b7280;margin-bottom:10px;">Format header CSV: <code>no_kk,nama_kepala_keluarga,blok,no_rumah,rt_rw,status_rumah</code></div>
         <form action="{{ route('admin.warga.import') }}" method="POST" enctype="multipart/form-data">
           @csrf
           <input type="file" name="csv_file" accept=".csv,text/csv" class="form-control mb-2" required>
           <div style="display:flex;gap:8px;">
             <button class="btn btn-success" type="submit">Import CSV</button>
-            <a href="{{ asset('warga_test.csv') }}" class="btn btn-outline-secondary" download>Download Template</a>
+            <a href="{{ asset('template_data_warga.csv') }}" class="btn btn-outline-secondary" download>Download Template</a>
           </div>
         </form>
       </div>
